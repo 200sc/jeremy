@@ -90,8 +90,26 @@ func NewJeremy() *Jeremy {
 	// Bindings
 	j.Bind(enterJeremy, "EnterFrame")
 	j.Bind(consumeSand, "KeyDownE")
+	j.Bind(placeGlob, "KeyDownSpacebar")
 	j.RSpace.Add(Blocking, jeremyStop)
 	return j
+}
+
+func placeGlob(id int, nothing interface{}) int {
+	j := event.GetEntity(id).(*Jeremy)
+	if j.sand > 0 {
+		// Todo: right now you can place infinite sand on the same spot. It is tracked, but there's no
+		// visual indication how much sand is there.
+		x := int((j.X()+8)/16) + int(j.dir.X())
+		y := int((j.Y()+8)/16) + int(j.dir.Y())
+		fmt.Println(x, y)
+		Sandglob.Place(x, y)
+		j.sand--
+		j.Speed.ShiftX(.1)
+		j.Speed.ShiftY(.1)
+		j.UpdateAnimation()
+	}
+	return 0
 }
 
 func consumeSand(id int, nothing interface{}) int {

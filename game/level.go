@@ -13,6 +13,7 @@ import (
 
 var (
 	envFriction = 0.8
+	levelInit   bool
 )
 
 func LevelStart(prevScene string, data interface{}) {
@@ -27,6 +28,7 @@ func LevelStart(prevScene string, data interface{}) {
 	j.SetPos(120, 120)
 	l := levelStore[levelName]
 	l.Place()
+	levelInit = true
 }
 
 func LevelLoop() bool {
