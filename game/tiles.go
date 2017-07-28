@@ -8,6 +8,7 @@ import (
 	"github.com/200sc/go-dist/intrange"
 
 	"github.com/oakmound/oak/collision"
+	"github.com/oakmound/oak/event"
 	"github.com/oakmound/oak/render"
 	"github.com/oakmound/oak/render/particle"
 	"github.com/oakmound/oak/shape"
@@ -26,7 +27,7 @@ const (
 	_
 	_
 	// We start at 10, so the csvs can be more easily read (evenly spaced columns)
-	// Subtract 20 from line number for key
+	// Subtract 21 from line number for key
 	Sand
 	Coral
 	PurpleCoralGate
@@ -109,8 +110,24 @@ var (
 	}
 )
 
-func globInit(x, y int) {
+type Glob struct {
+	s1, s2 *collision.Space
+	event.CID
+}
 
+func (g *Glob) Init() event.CID {
+	g.CID = event.NextID(g)
+	return g.CID
+}
+
+func globInit(x, y int) {
+	xf := float64(x) * 16
+	yf := float64(y) * 16
+	g := new(Glob)
+	g.Init()
+	g.s1 = collision.NewFullSpace(xf, yf, 16, 16, collision.Label(Sandglob), g.CID)
+	g.s2 = collision.NewFullSpace(xf, yf, 16, 16, Blocking, g.CID)
+	collision.Add(g.s1, g.s2)
 }
 
 func geyserInit(x, y int) {

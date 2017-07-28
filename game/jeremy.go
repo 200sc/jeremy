@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"path/filepath"
@@ -19,6 +20,8 @@ type Jeremy struct {
 	eyes                     *render.Compound
 	stopMovingX, stopMovingY bool
 	overlap                  physics.Vector
+	sand                     int
+	dir                      physics.Vector
 }
 
 func (j *Jeremy) Init() event.CID {
@@ -32,10 +35,22 @@ func NewJeremy() *Jeremy {
 	// Renderable setup
 	jsh := render.GetSheet(filepath.Join("16", "jeremy.png"))
 	cmp := render.NewCompound("still_down", map[string]render.Modifiable{
-		"still_down":  jsh[0][0].Copy(),
-		"still_up":    jsh[0][2].Copy(),
-		"still_left":  jsh[0][1].Copy().Modify(render.FlipX),
-		"still_right": jsh[0][1].Copy(),
+		"still_down":        jsh[0][0].Copy(),
+		"still_up":          jsh[0][2].Copy(),
+		"still_left":        jsh[0][1].Copy().Modify(render.FlipX),
+		"still_right":       jsh[0][1].Copy(),
+		"still_down_sand1":  jsh[1][0].Copy(),
+		"still_up_sand1":    jsh[1][2].Copy(),
+		"still_left_sand1":  jsh[1][1].Copy().Modify(render.FlipX),
+		"still_right_sand1": jsh[1][1].Copy(),
+		"still_down_sand2":  jsh[2][0].Copy(),
+		"still_up_sand2":    jsh[2][2].Copy(),
+		"still_left_sand2":  jsh[2][1].Copy().Modify(render.FlipX),
+		"still_right_sand2": jsh[2][1].Copy(),
+		"still_down_sand3":  jsh[3][0].Copy(),
+		"still_up_sand3":    jsh[3][2].Copy(),
+		"still_left_sand3":  jsh[3][1].Copy().Modify(render.FlipX),
+		"still_right_sand3": jsh[3][1].Copy(),
 	})
 	eyes, err := render.LoadSheetAnimation(filepath.Join("3", "eyes.png"), 3, 3, 0, 6, []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 0})
 	if err != nil {
@@ -68,13 +83,32 @@ func NewJeremy() *Jeremy {
 	j.Interactive = entities.NewInteractive(0, 0, 16, 16, composite, j.Init(), 0.4)
 	j.Speed = physics.NewVector(.5, .5)
 	j.overlap = physics.NewVector(0, 0)
+	j.dir = physics.NewVector(0, 0)
 	j.SetMass(10)
 	collision.Add(j.RSpace.Space)
 
 	// Bindings
 	j.Bind(enterJeremy, "EnterFrame")
+	j.Bind(consumeSand, "KeyDownE")
 	j.RSpace.Add(Blocking, jeremyStop)
 	return j
+}
+
+func consumeSand(id int, nothing interface{}) int {
+	j := event.GetEntity(id).(*Jeremy)
+	s := collision.NewUnassignedSpace((j.X()+8)+16*j.dir.X(), (j.Y()+8)+16*j.dir.Y(), 1, 1)
+	hit := collision.HitLabel(
+		s,
+		collision.Label(Sandglob))
+	if hit != nil {
+		hit.CID.Trigger("Consumed", nil)
+		j.sand++
+		j.Speed.ShiftX(-.1)
+		j.Speed.ShiftY(-.1)
+		j.UpdateAnimation()
+	}
+	fmt.Println("Consumed?", s.GetX(), s.GetY(), j.sand)
+	return 0
 }
 
 func enterJeremy(id int, frame interface{}) int {
@@ -82,15 +116,19 @@ func enterJeremy(id int, frame interface{}) int {
 	j.ApplyFriction(envFriction)
 	if oak.IsDown("W") {
 		j.Delta.SetY(j.Delta.Y() - j.Speed.Y())
+		j.dir.SetPos(0, -1)
 	}
 	if oak.IsDown("S") {
 		j.Delta.SetY(j.Delta.Y() + j.Speed.Y())
+		j.dir.SetPos(0, 1)
 	}
 	if oak.IsDown("A") {
 		j.Delta.SetX(j.Delta.X() - j.Speed.X())
+		j.dir.SetPos(-1, 0)
 	}
 	if oak.IsDown("D") {
 		j.Delta.SetX(j.Delta.X() + j.Speed.X())
+		j.dir.SetPos(1, 0)
 	}
 	j.ShiftPos(j.Delta.X(), j.Delta.Y())
 	j.UpdateAnimation()
@@ -121,30 +159,38 @@ func enterJeremy(id int, frame interface{}) int {
 func (j *Jeremy) UpdateAnimation() {
 	// Todo: make this composite setting easier
 	cmp := j.R.(*render.Composite)
-	if j.Delta.Magnitude() < 0.3 {
-		return
-	}
-	if math.Abs(j.Delta.X()) > math.Abs(j.Delta.Y()) {
-		if j.Delta.X() < 0 {
-			for i := 0; i < 2; i++ {
-				cmp.Get(i).(*render.Compound).Set("still_left")
+	if j.Delta.Magnitude() > 0.3 {
+		var s string
+		if math.Abs(j.Delta.X()) > math.Abs(j.Delta.Y()) {
+			if j.Delta.X() < 0 {
+				s = "still_left"
+			} else {
+				s = "still_right"
 			}
 		} else {
-			for i := 0; i < 2; i++ {
-				cmp.Get(i).(*render.Compound).Set("still_right")
+			if j.Delta.Y() < 0 {
+				s = "still_up"
+			} else {
+				s = "still_down"
 			}
 		}
-	} else {
-		if j.Delta.Y() < 0 {
-			for i := 0; i < 2; i++ {
-				cmp.Get(i).(*render.Compound).Set("still_up")
-			}
-		} else {
-			for i := 0; i < 2; i++ {
-				cmp.Get(i).(*render.Compound).Set("still_down")
-			}
-		}
+		cmp.Get(1).(*render.Compound).Set(s)
 	}
+	s := cmp.Get(1).(*render.Compound).Get()
+	s += j.SandString()
+	cmp.Get(0).(*render.Compound).Set(s)
+}
+
+func (j *Jeremy) SandString() string {
+	switch j.sand {
+	case 1:
+		return "_sand1"
+	case 2:
+		return "_sand2"
+	case 3:
+		return "_sand3"
+	}
+	return ""
 }
 
 func jeremyStop(s, s2 *collision.Space) {
@@ -152,7 +198,7 @@ func jeremyStop(s, s2 *collision.Space) {
 		id1 := int(s.CID)
 		j := event.GetEntity(id1).(*Jeremy)
 		j.SetStopXY(s2)
-		// Push what we ran into
+		// Push what we ran into (if we end up having pushable things)
 		v := j.Delta.Copy()
 		if j.stopMovingX {
 			v.SetY(0)
