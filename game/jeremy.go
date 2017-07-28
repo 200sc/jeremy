@@ -101,7 +101,7 @@ func consumeSand(id int, nothing interface{}) int {
 		s,
 		collision.Label(Sandglob))
 	if hit != nil {
-		hit.CID.Trigger("Consumed", nil)
+		hit.CID.Trigger("Consume", nil)
 		j.sand++
 		j.Speed.ShiftX(-.1)
 		j.Speed.ShiftY(-.1)
