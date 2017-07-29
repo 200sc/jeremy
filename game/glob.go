@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/oakmound/oak/collision"
 	"github.com/oakmound/oak/event"
 	"github.com/oakmound/oak/physics"
@@ -22,8 +20,7 @@ func (g *Glob) Init() event.CID {
 }
 
 func globInit(x, y int, r render.Renderable) {
-	xf := float64(x) * 16
-	yf := float64(y) * 16
+	xf, yf := float64(x)*16, float64(y)*16
 	g := new(Glob)
 	g.Vector = physics.NewVector(xf, yf)
 	g.r = r
@@ -35,7 +32,6 @@ func globInit(x, y int, r render.Renderable) {
 }
 
 func globDestroy(id int, nothing interface{}) int {
-	fmt.Println("Glob destroy")
 	g := event.GetEntity(id).(*Glob)
 	g.r.UnDraw()
 	collision.Remove(g.s1, g.s2)

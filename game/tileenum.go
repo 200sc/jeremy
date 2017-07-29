@@ -25,10 +25,13 @@ const (
 	Sandtrap
 	Sandglob
 	Sandgeyser
+	JeremyTile
 	Crab
 	Treasure
 	SandKey
 	CoralExit
+	GreenCoralGate
+	GreenCoralSwitch
 )
 
 type Tile int

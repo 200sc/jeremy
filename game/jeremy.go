@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"path/filepath"
@@ -29,7 +28,7 @@ func (j *Jeremy) Init() event.CID {
 	return j.CID
 }
 
-func NewJeremy() *Jeremy {
+func NewJeremy(x, y float64) *Jeremy {
 	j := new(Jeremy)
 
 	// Renderable setup
@@ -51,6 +50,10 @@ func NewJeremy() *Jeremy {
 		"still_up_sand3":    jsh[3][2].Copy(),
 		"still_left_sand3":  jsh[3][1].Copy().Modify(render.FlipX),
 		"still_right_sand3": jsh[3][1].Copy(),
+		"still_down_key":    jsh[4][0].Copy(),
+		"still_up_key":      jsh[4][2].Copy(),
+		"still_left_key":    jsh[4][1].Copy().Modify(render.FlipX),
+		"still_right_key":   jsh[4][1].Copy(),
 	})
 	eyes, err := render.LoadSheetAnimation(filepath.Join("3", "eyes.png"), 3, 3, 0, 6, []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 0})
 	if err != nil {
@@ -80,29 +83,44 @@ func NewJeremy() *Jeremy {
 	composite := render.NewComposite([]render.Modifiable{cmp, eyecmp})
 
 	// Non-renderable variables
-	j.Interactive = entities.NewInteractive(0, 0, 16, 16, composite, j.Init(), 0.4)
+	j.Interactive = entities.NewInteractive(0, 0, 14, 14, composite, j.Init(), 0.4)
 	j.Speed = physics.NewVector(.5, .5)
 	j.overlap = physics.NewVector(0, 0)
 	j.dir = physics.NewVector(0, 0)
 	j.SetMass(10)
-	collision.Add(j.RSpace.Space)
+	j.RSpace.Space.UpdateLabel(collision.Label(JeremyTile))
 
 	// Bindings
 	j.Bind(enterJeremy, "EnterFrame")
 	j.Bind(consumeSand, "KeyDownE")
 	j.Bind(placeGlob, "KeyDownSpacebar")
+	j.Bind(pauseJeremy, "PausePlayer")
 	j.RSpace.Add(Blocking, jeremyStop)
+
+	render.Draw(j.R, 3)
+	j.SetPos(x, y)
 	return j
+}
+
+func pauseJeremy(id int, nothing interface{}) int {
+	j := event.GetEntity(id).(*Jeremy)
+	j.UnbindAll()
+	return 0
 }
 
 func placeGlob(id int, nothing interface{}) int {
 	j := event.GetEntity(id).(*Jeremy)
-	if j.sand > 0 {
+	x := int((j.X()+8)/16) + int(j.dir.X())
+	y := int((j.Y()+8)/16) + int(j.dir.Y())
+	if j.sand == 4 {
+		SandKey.Place(x, y)
+		j.sand = 0
+		j.Speed.ShiftX(.3)
+		j.Speed.ShiftY(.3)
+		j.UpdateAnimation()
+	} else if j.sand > 0 {
 		// Todo: right now you can place infinite sand on the same spot. It is tracked, but there's no
 		// visual indication how much sand is there.
-		x := int((j.X()+8)/16) + int(j.dir.X())
-		y := int((j.Y()+8)/16) + int(j.dir.Y())
-		fmt.Println(x, y)
 		Sandglob.Place(x, y)
 		j.sand--
 		j.Speed.ShiftX(.1)
@@ -114,11 +132,26 @@ func placeGlob(id int, nothing interface{}) int {
 
 func consumeSand(id int, nothing interface{}) int {
 	j := event.GetEntity(id).(*Jeremy)
-	if j.sand < 3 {
-		s := collision.NewUnassignedSpace((j.X()+8)+16*j.dir.X(), (j.Y()+8)+16*j.dir.Y(), 1, 1)
+	s := collision.NewUnassignedSpace((j.X()+8)+16*j.dir.X(), (j.Y()+8)+16*j.dir.Y(), 1, 1)
+	if j.sand == 0 {
 		hit := collision.HitLabel(
 			s,
-			collision.Label(Sandglob))
+			collision.Label(SandKey),
+		)
+		if hit != nil {
+			hit.CID.Trigger("Consume", nil)
+			j.sand = 4
+			j.Speed.ShiftX(-.3)
+			j.Speed.ShiftY(-.3)
+			j.UpdateAnimation()
+			return 0
+		}
+	}
+	if j.sand < 3 {
+		hit := collision.HitLabel(
+			s,
+			collision.Label(Sandglob),
+		)
 		if hit != nil {
 			hit.CID.Trigger("Consume", nil)
 			j.sand++
@@ -126,7 +159,6 @@ func consumeSand(id int, nothing interface{}) int {
 			j.Speed.ShiftY(-.1)
 			j.UpdateAnimation()
 		}
-		fmt.Println("Consumed?", s.GetX(), s.GetY(), j.sand)
 	}
 	return 0
 }
@@ -209,6 +241,8 @@ func (j *Jeremy) SandString() string {
 		return "_sand2"
 	case 3:
 		return "_sand3"
+	case 4:
+		return "_key"
 	}
 	return ""
 }
