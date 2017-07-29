@@ -114,18 +114,20 @@ func placeGlob(id int, nothing interface{}) int {
 
 func consumeSand(id int, nothing interface{}) int {
 	j := event.GetEntity(id).(*Jeremy)
-	s := collision.NewUnassignedSpace((j.X()+8)+16*j.dir.X(), (j.Y()+8)+16*j.dir.Y(), 1, 1)
-	hit := collision.HitLabel(
-		s,
-		collision.Label(Sandglob))
-	if hit != nil {
-		hit.CID.Trigger("Consume", nil)
-		j.sand++
-		j.Speed.ShiftX(-.1)
-		j.Speed.ShiftY(-.1)
-		j.UpdateAnimation()
+	if j.sand < 3 {
+		s := collision.NewUnassignedSpace((j.X()+8)+16*j.dir.X(), (j.Y()+8)+16*j.dir.Y(), 1, 1)
+		hit := collision.HitLabel(
+			s,
+			collision.Label(Sandglob))
+		if hit != nil {
+			hit.CID.Trigger("Consume", nil)
+			j.sand++
+			j.Speed.ShiftX(-.1)
+			j.Speed.ShiftY(-.1)
+			j.UpdateAnimation()
+		}
+		fmt.Println("Consumed?", s.GetX(), s.GetY(), j.sand)
 	}
-	fmt.Println("Consumed?", s.GetX(), s.GetY(), j.sand)
 	return 0
 }
 
