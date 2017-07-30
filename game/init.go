@@ -3,6 +3,7 @@ package game
 import (
 	"encoding/csv"
 	"log"
+	"path/filepath"
 	"strconv"
 
 	"github.com/oakmound/oak"
@@ -24,7 +25,7 @@ func FirstSceneEnd() (string, *oak.SceneResult) {
 
 func init() {
 	for _, l := range levels {
-		f, err := fileutil.Open(l + ".csv")
+		f, err := fileutil.Open(filepath.Join("levels", l+".csv"))
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -46,10 +46,10 @@ func vCrabFollow(id int, nothing interface{}) int {
 	c := event.GetEntity(id).(*entities.Solid)
 	if !alg.F64eq(c.Y(), JeremyPos.Y()) {
 		delta := JeremyPos.Y() - c.Y()
-		if delta > 2.0 {
-			delta = 2.0
-		} else if delta < -2.0 {
-			delta = -2.0
+		if delta > 3.0 {
+			delta = 3.0
+		} else if delta < -3.0 {
+			delta = -3.0
 		}
 		c.ShiftY(delta)
 		if collision.HitLabel(c.Space, Blocking, collision.Label(Sandtrap)) != nil {
@@ -67,10 +67,10 @@ func hCrabFollow(id int, nothing interface{}) int {
 	c := event.GetEntity(id).(*entities.Solid)
 	if !alg.F64eq(c.X(), JeremyPos.X()) {
 		delta := JeremyPos.X() - c.X()
-		if delta > 2.0 {
-			delta = 2.0
-		} else if delta < -2.0 {
-			delta = -2.0
+		if delta > 3.0 {
+			delta = 3.0
+		} else if delta < -3.0 {
+			delta = -3.0
 		}
 		c.ShiftX(delta)
 		if collision.HitLabel(c.Space, Blocking, collision.Label(Sandtrap)) != nil {

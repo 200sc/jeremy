@@ -222,7 +222,7 @@ func enterJeremy(id int, frame interface{}) int {
 func (j *Jeremy) UpdateAnimation() {
 	// Todo: make this composite setting easier
 	cmp := j.R.(*render.Composite)
-	if j.Delta.Magnitude() > 0.3 {
+	if j.Delta.Magnitude() > 0.4 {
 		var s string
 		if math.Abs(j.Delta.X()) > math.Abs(j.Delta.Y()) {
 			if j.Delta.X() < 0 {
