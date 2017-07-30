@@ -63,10 +63,23 @@ func gateInit(t Tile) func(int, int, render.Renderable) {
 		g := new(Gate)
 		g.Init()
 		g.r = r.(*render.Compound)
-		g.s1 = collision.NewFullSpace(xf, yf, 16, 16, Blocking, g.CID)
+		g.s1 = collision.NewFullSpace(xf+2, yf+2, 12, 12, Blocking, g.CID)
 		collision.Add(g.s1)
 		g.Bind(gateOpen, "Open"+gc.String())
 		g.Bind(gateClose, "Close"+gc.String())
+	}
+}
+
+func offGateInit(t Tile) func(int, int, render.Renderable) {
+	gc := t.GateColor()
+	return func(x, y int, r render.Renderable) {
+		xf, yf := float64(x)*16, float64(y)*16
+		g := new(Gate)
+		g.Init()
+		g.r = r.(*render.Compound)
+		g.s1 = collision.NewFullSpace(xf+2, yf+2, 12, 12, Blocking, g.CID)
+		g.Bind(gateOpen, "Close"+gc.String())
+		g.Bind(gateClose, "Open"+gc.String())
 	}
 }
 

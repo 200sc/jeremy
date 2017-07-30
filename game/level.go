@@ -1,6 +1,11 @@
 package game
 
-import "github.com/oakmound/oak"
+import (
+	"time"
+
+	"github.com/oakmound/oak"
+	"github.com/oakmound/oak/event"
+)
 
 var (
 	envFriction   = 0.8
@@ -13,6 +18,14 @@ func LevelStart(prevScene string, data interface{}) {
 	levelName := levels[currentLevel]
 	l := levelStore[levelName]
 	l.Place()
+	event.GlobalBind(func(int, interface{}) int {
+		ok, d := oak.IsHeld("R")
+		if ok && d > time.Millisecond*1500 {
+			currentLevel--
+			levelComplete = true
+		}
+		return 0
+	}, "EnterFrame")
 	levelInit = true
 }
 
@@ -23,9 +36,9 @@ func LevelLoop() bool {
 func LevelEnd() (string, *oak.SceneResult) {
 	levelInit = false
 	levelComplete = false
-	//currentLevel++
+	currentLevel++
 	res := &oak.SceneResult{
-		Transition: oak.TransitionFade(.001, 900),
+		Transition: oak.TransitionFade(.001, 500),
 	}
 	return "level", res
 }
@@ -42,5 +55,5 @@ func (l level) Place() {
 
 var (
 	levelStore = make(map[string]level)
-	levels     = []string{"level1"}
+	levels     = []string{"tutorial1", "tutorial2", "tutorial3", "tutorial4", "level1", "level3"}
 )

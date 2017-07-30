@@ -27,6 +27,7 @@ var (
 		TealCoralGate:     Logical,
 		TealCoralSwitch:   Logical,
 		GreenCoralGate:    Logical,
+		GreenCoralGateOff: Logical,
 		GreenCoralSwitch:  Logical,
 		Sandtrap:          Logical,
 		Sandglob:          Logical,
@@ -64,6 +65,10 @@ func InitTiles() {
 		"open":   jsh[6][5].Copy(),
 	})
 	tileRs[GreenCoralGate] = render.NewCompound("closed", map[string]render.Modifiable{
+		"closed": jsh[7][6].Copy(),
+		"open":   jsh[7][5].Copy(),
+	})
+	tileRs[GreenCoralGateOff] = render.NewCompound("open", map[string]render.Modifiable{
 		"closed": jsh[7][6].Copy(),
 		"open":   jsh[7][5].Copy(),
 	})

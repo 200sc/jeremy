@@ -23,7 +23,7 @@ func switchInit(t Tile) func(int, int, render.Renderable) {
 		xf, yf := float64(x)*16, float64(y)*16
 		s := new(Switch)
 		s.Init()
-		sp := collision.NewSpace(xf, yf, 16, 16, s.CID)
+		sp := collision.NewSpace(xf+6, yf+6, 4, 4, s.CID)
 		collision.Add(sp)
 		collision.PhaseCollision(sp)
 		s.Bind(switchOn(gc), "CollisionStart")
@@ -65,21 +65,24 @@ func alternatingSwitchInit(t Tile) func(int, int, render.Renderable) {
 		xf, yf := float64(x)*16, float64(y)*16
 		s := new(Switch)
 		s.Init()
-		sp := collision.NewSpace(xf, yf, 16, 16, s.CID)
+		sp := collision.NewSpace(xf+6, yf+6, 4, 4, s.CID)
 		collision.Add(sp)
 		collision.PhaseCollision(sp)
 		s.Bind(alternatingSwitch(gc), "CollisionStart")
 	}
 }
 
+var (
+	greenSwitchTracker int
+)
+
 // theoretically only green gates use alternating switches
 func alternatingSwitch(gc GateColor) func(id int, label interface{}) int {
 	return func(id int, label interface{}) int {
-		s := event.GetEntity(id).(*Switch)
 		switch label.(collision.Label) {
 		case collision.Label(Sandglob), collision.Label(JeremyTile):
-			s.touching++
-			if s.touching%2 == 0 {
+			greenSwitchTracker = (greenSwitchTracker + 1) % 2
+			if greenSwitchTracker == 0 {
 				event.Trigger("Close"+gc.String(), nil)
 			} else {
 				event.Trigger("Open"+gc.String(), nil)

@@ -55,6 +55,7 @@ func init() {
 		BlueCoralGate:     gateInit(BlueCoralGate),
 		BlueCoralSwitch:   switchInit(BlueCoralSwitch),
 		GreenCoralGate:    gateInit(GreenCoralGate),
+		GreenCoralGateOff: offGateInit(GreenCoralGate),
 		GreenCoralSwitch:  alternatingSwitchInit(GreenCoralSwitch),
 		CoralExit:         exitInit,
 		SandKey:           keyInit,

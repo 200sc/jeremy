@@ -32,6 +32,7 @@ const (
 	CoralExit
 	GreenCoralGate
 	GreenCoralSwitch
+	GreenCoralGateOff
 )
 
 type Tile int

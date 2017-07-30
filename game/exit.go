@@ -36,12 +36,12 @@ func exitLevel(id int, nothing interface{}) int {
 	event.Trigger("PausePlayer", nil)
 	e.Bind(func(id int, frame interface{}) int {
 		f := frame.(int)
-		if f%11 == 0 {
+		if f%7 == 0 {
 			e.r.ShiftX(1)
 		}
 		return 0
 	}, "EnterFrame")
-	go timing.DoAfter(time.Second*3, func() {
+	go timing.DoAfter(time.Second*2, func() {
 		levelComplete = true
 	})
 	return event.UnbindEvent
