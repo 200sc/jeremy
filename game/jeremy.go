@@ -13,6 +13,10 @@ import (
 	"github.com/oakmound/oak/render"
 )
 
+var (
+	JeremyPos physics.Vector
+)
+
 type Jeremy struct {
 	entities.Interactive
 	physics.Mass
@@ -28,7 +32,7 @@ func (j *Jeremy) Init() event.CID {
 	return j.CID
 }
 
-func NewJeremy(x, y float64) *Jeremy {
+func NewJeremy(x, y int, r render.Renderable) {
 	j := new(Jeremy)
 
 	// Renderable setup
@@ -101,8 +105,8 @@ func NewJeremy(x, y float64) *Jeremy {
 	j.RSpace.Add(collision.Label(Treasure), pickUpTreasure)
 
 	render.Draw(j.R, 3)
-	j.SetPos(x, y)
-	return j
+	j.SetPos(float64(x*16), float64(y*16))
+	JeremyPos = j.Vector
 }
 
 func pauseJeremy(id int, nothing interface{}) int {

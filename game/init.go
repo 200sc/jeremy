@@ -64,5 +64,8 @@ func init() {
 		SandKey:            keyInit,
 		Sandtrap:           trapInit,
 		Treasure:           treasureInit,
+		JeremyTile:         NewJeremy,
+		HorizontalCrab:     NewHorizontalCrab,
+		VerticalCrab:       NewVerticalCrab,
 	}
 }

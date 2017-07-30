@@ -26,7 +26,7 @@ const (
 	Sandglob
 	Sandgeyser
 	JeremyTile
-	Crab
+	VerticalCrab
 	Treasure
 	SandKey
 	CoralExit
@@ -36,6 +36,7 @@ const (
 	PurpleCoralGateOff
 	BlueCoralGateOff
 	TealCoralGateOff
+	HorizontalCrab
 )
 
 type Tile int

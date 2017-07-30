@@ -35,7 +35,7 @@ func switchOn(gc GateColor) func(id int, label interface{}) int {
 	return func(id int, label interface{}) int {
 		s := event.GetEntity(id).(*Switch)
 		switch label.(collision.Label) {
-		case collision.Label(Sandglob), collision.Label(JeremyTile):
+		case collision.Label(Sandglob), collision.Label(JeremyTile), Blocking:
 			s.touching++
 			if s.touching == 1 {
 				event.Trigger("Open"+gc.String(), nil)
@@ -49,7 +49,7 @@ func switchOff(gc GateColor) func(id int, label interface{}) int {
 	return func(id int, label interface{}) int {
 		s := event.GetEntity(id).(*Switch)
 		switch label.(collision.Label) {
-		case collision.Label(Sandglob), collision.Label(JeremyTile):
+		case collision.Label(Sandglob), collision.Label(JeremyTile), Blocking:
 			s.touching--
 			if s.touching == 0 {
 				event.Trigger("Close"+gc.String(), nil)
@@ -80,7 +80,7 @@ var (
 func alternatingSwitch(gc GateColor) func(id int, label interface{}) int {
 	return func(id int, label interface{}) int {
 		switch label.(collision.Label) {
-		case collision.Label(Sandglob), collision.Label(JeremyTile):
+		case collision.Label(Sandglob), collision.Label(JeremyTile), Blocking:
 			greenSwitchTracker = (greenSwitchTracker + 1) % 2
 			if greenSwitchTracker == 0 {
 				event.Trigger("Close"+gc.String(), nil)

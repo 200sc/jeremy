@@ -13,6 +13,7 @@ const (
 	Dood TileType = iota
 	Solid
 	Logical
+	Entity
 )
 
 var (
@@ -35,10 +36,12 @@ var (
 		Sandtrap:           Logical,
 		Sandglob:           Logical,
 		Sandgeyser:         Logical,
-		Crab:               Logical,
+		VerticalCrab:       Entity,
+		HorizontalCrab:     Entity,
 		Treasure:           Logical,
 		SandKey:            Logical,
 		CoralExit:          Logical,
+		JeremyTile:         Entity,
 	}
 	initFunctions map[Tile]func(int, int, render.Renderable)
 )
@@ -99,16 +102,12 @@ func InitTiles() {
 func (t Tile) Place(x, y int) {
 	xf := float64(x) * 16
 	yf := float64(y) * 16
-	// Jeremy is special
-	// Todo: maybe jeremy shouldn't be special
-	if t == JeremyTile {
+	switch tileTypes[t] {
+	case Entity:
 		if !levelInit {
 			Sand.Place(x, y)
 		}
-		NewJeremy(xf, yf)
-		return
-	}
-	switch tileTypes[t] {
+		initFunctions[t](x, y, nil)
 	case Solid:
 		// Solids are doods that also block movement
 		collision.Add(collision.NewLabeledSpace(xf, yf, 16, 16, Blocking))
