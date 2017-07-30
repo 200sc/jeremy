@@ -49,6 +49,7 @@ func InitTiles() {
 	tileRs[Coral] = jsh[1][6].Copy()
 	tileRs[Sandglob] = jsh[2][6].Copy()
 	tileRs[Sandgeyser] = jsh[3][6].Copy()
+	tileRs[Treasure] = jsh[1][5].Copy()
 
 	tileRs[PurpleCoralSwitch] = jsh[4][4].Copy()
 	tileRs[BlueCoralSwitch] = jsh[5][4].Copy()

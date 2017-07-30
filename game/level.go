@@ -55,5 +55,5 @@ func (l level) Place() {
 
 var (
 	levelStore = make(map[string]level)
-	levels     = []string{"tutorial1", "tutorial2", "tutorial3", "tutorial4", "tutorial5", "level1", "level3", "level4"}
+	levels     = []string{"tutorial1", "tutorial2", "tutorial3", "tutorial4", "tutorial5", "level1", "level2", "level3", "level4"}
 )

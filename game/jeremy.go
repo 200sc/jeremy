@@ -98,6 +98,7 @@ func NewJeremy(x, y float64) *Jeremy {
 
 	j.RSpace.Add(Blocking, jeremyStop)
 	j.RSpace.Add(collision.Label(Sandtrap), jeremyStop)
+	j.RSpace.Add(collision.Label(Treasure), pickUpTreasure)
 
 	render.Draw(j.R, 3)
 	j.SetPos(x, y)
@@ -251,6 +252,10 @@ func (j *Jeremy) SandString() string {
 		return "_key"
 	}
 	return ""
+}
+
+func pickUpTreasure(s, s2 *collision.Space) {
+	s2.CID.Trigger("Consume", nil)
 }
 
 func jeremyStop(s, s2 *collision.Space) {
