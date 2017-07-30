@@ -134,8 +134,8 @@ func placeGlob(id int, nothing interface{}) int {
 		// visual indication how much sand is there.
 		Sandglob.Place(x, y)
 		j.sand--
-		j.Speed.ShiftX(.1)
-		j.Speed.ShiftY(.1)
+		j.Speed.ShiftX(0.1)
+		j.Speed.ShiftY(0.1)
 		j.UpdateAnimation()
 	}
 	return 0
