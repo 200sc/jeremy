@@ -27,7 +27,8 @@ func (t Tile) GateColor() GateColor {
 		return Teal
 	case BlueCoralGate, BlueCoralSwitch:
 		return Blue
-		// Todo green
+	case GreenCoralGate, GreenCoralSwitch:
+		return Green
 	}
 	return NonGate
 }
