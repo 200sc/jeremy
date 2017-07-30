@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/oakmound/oak"
+	"github.com/oakmound/oak/audio"
 	"github.com/oakmound/oak/collision"
 	"github.com/oakmound/oak/entities"
 	"github.com/oakmound/oak/event"
@@ -144,6 +145,7 @@ func placeGlob(id int, nothing interface{}) int {
 		j.Speed.ShiftX(.3)
 		j.Speed.ShiftY(.3)
 		j.UpdateAnimation()
+		audio.Play(sounds, "Sand.wav")
 		// Otherwise drop sand
 	} else if j.sand > 0 {
 		sandglob.Place(x, y)
@@ -151,6 +153,7 @@ func placeGlob(id int, nothing interface{}) int {
 		j.Speed.ShiftX(0.1)
 		j.Speed.ShiftY(0.1)
 		j.UpdateAnimation()
+		audio.Play(sounds, "Sand.wav")
 	}
 	return 0
 }
@@ -166,6 +169,7 @@ func consumeSand(id int, nothing interface{}) int {
 			collision.Label(sandKey),
 		)
 		if hit != nil {
+			audio.Play(sounds, "Sand.wav")
 			hit.CID.Trigger("Consume", nil)
 			j.sand = 4
 			j.Speed.ShiftX(-.3)
@@ -181,6 +185,7 @@ func consumeSand(id int, nothing interface{}) int {
 			collision.Label(sandglob),
 		)
 		if hit != nil {
+			audio.Play(sounds, "Sand.wav")
 			hit.CID.Trigger("Consume", nil)
 			j.sand++
 			j.Speed.ShiftX(-.1)

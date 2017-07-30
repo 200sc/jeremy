@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/oakmound/oak/audio"
 	"github.com/oakmound/oak/collision"
 	"github.com/oakmound/oak/event"
 	"github.com/oakmound/oak/render"
@@ -37,6 +38,7 @@ func switchOn(gc gateColor) func(id int, label interface{}) int {
 		case collision.Label(sandglob), collision.Label(jeremyTile), blocking:
 			s.touching++
 			if s.touching == 1 {
+				audio.Play(sounds, "ButtonDown.wav")
 				event.Trigger("Open"+gc.String(), nil)
 			}
 		}
@@ -51,6 +53,7 @@ func switchOff(gc gateColor) func(id int, label interface{}) int {
 		case collision.Label(sandglob), collision.Label(jeremyTile), blocking:
 			s.touching--
 			if s.touching == 0 {
+				audio.Play(sounds, "ButtonUp.wav")
 				event.Trigger("Close"+gc.String(), nil)
 			}
 		}
@@ -82,8 +85,10 @@ func alternatingSwitch(gc gateColor) func(id int, label interface{}) int {
 		case collision.Label(sandglob), collision.Label(jeremyTile), blocking:
 			greenSwitchTracker = (greenSwitchTracker + 1) % 2
 			if greenSwitchTracker == 0 {
+				audio.Play(sounds, "ButtonUp.wav")
 				event.Trigger("Close"+gc.String(), nil)
 			} else {
+				audio.Play(sounds, "ButtonDown.wav")
 				event.Trigger("Open"+gc.String(), nil)
 			}
 		}

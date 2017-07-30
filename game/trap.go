@@ -6,6 +6,7 @@ import (
 
 	"github.com/200sc/go-dist/floatrange"
 	"github.com/200sc/go-dist/intrange"
+	"github.com/oakmound/oak/audio"
 	"github.com/oakmound/oak/collision"
 	"github.com/oakmound/oak/event"
 	"github.com/oakmound/oak/render"
@@ -39,6 +40,7 @@ func trapInit(x, y int, r render.Renderable) {
 func trapEnter(id int, nothing interface{}) int {
 	t := event.GetEntity(id).(*trap)
 	if t.r.Get() == "filled" && t.emptyTime.Before(time.Now()) {
+		audio.Play(sounds, "PitEmpty.wav")
 		t.r.Set("hole")
 		collision.Add(t.s)
 		t.ps.Stop()

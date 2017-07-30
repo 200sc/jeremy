@@ -1,6 +1,7 @@
 package game
 
 import (
+	"github.com/oakmound/oak/audio"
 	"github.com/oakmound/oak/collision"
 	"github.com/oakmound/oak/event"
 	"github.com/oakmound/oak/render"
@@ -29,6 +30,7 @@ func treasureInit(x, y int, r render.Renderable) {
 }
 
 func treasureDestroy(id int, nothing interface{}) int {
+	audio.Play(sounds, "Treasure.wav")
 	t := event.GetEntity(id).(*treasureBox)
 	t.r.UnDraw()
 	collision.Remove(t.s)

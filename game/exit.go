@@ -3,6 +3,7 @@ package game
 import (
 	"time"
 
+	"github.com/oakmound/oak/audio"
 	"github.com/oakmound/oak/collision"
 	"github.com/oakmound/oak/event"
 	"github.com/oakmound/oak/render"
@@ -39,6 +40,9 @@ func exitLevel(id int, nothing interface{}) int {
 		f := frame.(int)
 		if f%7 == 0 {
 			e.r.ShiftX(1)
+		}
+		if f%14 == 0 {
+			audio.Play(sounds, "PitEmpty.wav")
 		}
 		return 0
 	}, "EnterFrame")
