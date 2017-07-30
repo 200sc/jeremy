@@ -1,6 +1,9 @@
 package game
 
 import (
+	"fmt"
+	"sync"
+
 	"github.com/oakmound/oak/collision"
 	"github.com/oakmound/oak/event"
 	"github.com/oakmound/oak/physics"
@@ -49,6 +52,8 @@ type Gate struct {
 	r  *render.Compound
 	s1 *collision.Space
 	event.CID
+	lock   sync.Mutex
+	active bool
 }
 
 func (g *Gate) Init() event.CID {
@@ -61,10 +66,12 @@ func gateInit(t Tile) func(int, int, render.Renderable) {
 	return func(x, y int, r render.Renderable) {
 		xf, yf := float64(x)*16, float64(y)*16
 		g := new(Gate)
+		g.lock = sync.Mutex{}
 		g.Init()
 		g.r = r.(*render.Compound)
 		g.s1 = collision.NewFullSpace(xf+2, yf+2, 12, 12, Blocking, g.CID)
 		collision.Add(g.s1)
+		g.active = true
 		g.Bind(gateOpen, "Open"+gc.String())
 		g.Bind(gateClose, "Close"+gc.String())
 	}
@@ -75,9 +82,11 @@ func offGateInit(t Tile) func(int, int, render.Renderable) {
 	return func(x, y int, r render.Renderable) {
 		xf, yf := float64(x)*16, float64(y)*16
 		g := new(Gate)
+		g.lock = sync.Mutex{}
 		g.Init()
 		g.r = r.(*render.Compound)
 		g.s1 = collision.NewFullSpace(xf+2, yf+2, 12, 12, Blocking, g.CID)
+		g.active = false
 		g.Bind(gateOpen, "Close"+gc.String())
 		g.Bind(gateClose, "Open"+gc.String())
 	}
@@ -85,14 +94,26 @@ func offGateInit(t Tile) func(int, int, render.Renderable) {
 
 func gateOpen(id int, nothing interface{}) int {
 	g := event.GetEntity(id).(*Gate)
-	g.r.Set("open")
-	collision.Remove(g.s1)
+	g.lock.Lock()
+	if g.active {
+		fmt.Println("Removing ", g.s1)
+		g.r.Set("open")
+		collision.Remove(g.s1)
+		g.active = false
+	}
+	g.lock.Unlock()
 	return 0
 }
 
 func gateClose(id int, nothing interface{}) int {
 	g := event.GetEntity(id).(*Gate)
-	g.r.Set("closed")
-	collision.Add(g.s1)
+	g.lock.Lock()
+	if !g.active {
+		fmt.Println("Adding ", g.s1)
+		g.r.Set("closed")
+		collision.Add(g.s1)
+		g.active = true
+	}
+	g.lock.Unlock()
 	return 0
 }
