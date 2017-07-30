@@ -33,6 +33,9 @@ const (
 	GreenCoralGate
 	GreenCoralSwitch
 	GreenCoralGateOff
+	PurpleCoralGateOff
+	BlueCoralGateOff
+	TealCoralGateOff
 )
 
 type Tile int

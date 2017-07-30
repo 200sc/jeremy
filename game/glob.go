@@ -25,10 +25,15 @@ func globInit(x, y int, r render.Renderable) {
 	g.Vector = physics.NewVector(xf, yf)
 	g.r = r
 	g.Init()
-	g.s1 = collision.NewFullSpace(xf, yf, 16, 16, collision.Label(Sandglob), g.CID)
-	g.s2 = collision.NewFullSpace(xf, yf, 16, 16, Blocking, g.CID)
+	g.s1 = collision.NewFullSpace(xf+2, yf+2, 12, 12, collision.Label(Sandglob), g.CID)
+	g.s2 = collision.NewFullSpace(xf+2, yf+2, 12, 12, Blocking, g.CID)
+	hit := collision.HitLabel(g.s1, collision.Label(Sandtrap))
 	collision.Add(g.s1, g.s2)
 	g.CID.Bind(globDestroy, "Consume")
+	if hit != nil {
+		hit.CID.Trigger("UseGlob", nil)
+		g.CID.Trigger("Consume", nil)
+	}
 }
 
 func globDestroy(id int, nothing interface{}) int {

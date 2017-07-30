@@ -18,24 +18,27 @@ const (
 var (
 	tileRs    = make(map[Tile]render.Modifiable)
 	tileTypes = map[Tile]TileType{
-		Sand:              Dood,
-		Coral:             Solid,
-		PurpleCoralGate:   Logical,
-		PurpleCoralSwitch: Logical,
-		BlueCoralGate:     Logical,
-		BlueCoralSwitch:   Logical,
-		TealCoralGate:     Logical,
-		TealCoralSwitch:   Logical,
-		GreenCoralGate:    Logical,
-		GreenCoralGateOff: Logical,
-		GreenCoralSwitch:  Logical,
-		Sandtrap:          Logical,
-		Sandglob:          Logical,
-		Sandgeyser:        Logical,
-		Crab:              Logical,
-		Treasure:          Logical,
-		SandKey:           Logical,
-		CoralExit:         Logical,
+		Sand:               Dood,
+		Coral:              Solid,
+		PurpleCoralGate:    Logical,
+		PurpleCoralGateOff: Logical,
+		PurpleCoralSwitch:  Logical,
+		BlueCoralGate:      Logical,
+		BlueCoralGateOff:   Logical,
+		BlueCoralSwitch:    Logical,
+		TealCoralGate:      Logical,
+		TealCoralGateOff:   Logical,
+		TealCoralSwitch:    Logical,
+		GreenCoralGate:     Logical,
+		GreenCoralGateOff:  Logical,
+		GreenCoralSwitch:   Logical,
+		Sandtrap:           Logical,
+		Sandglob:           Logical,
+		Sandgeyser:         Logical,
+		Crab:               Logical,
+		Treasure:           Logical,
+		SandKey:            Logical,
+		CoralExit:          Logical,
 	}
 	initFunctions map[Tile]func(int, int, render.Renderable)
 )
@@ -56,11 +59,23 @@ func InitTiles() {
 		"closed": jsh[4][6].Copy(),
 		"open":   jsh[4][5].Copy(),
 	})
+	tileRs[PurpleCoralGateOff] = render.NewCompound("open", map[string]render.Modifiable{
+		"closed": jsh[4][6].Copy(),
+		"open":   jsh[4][5].Copy(),
+	})
 	tileRs[BlueCoralGate] = render.NewCompound("closed", map[string]render.Modifiable{
 		"closed": jsh[5][6].Copy(),
 		"open":   jsh[5][5].Copy(),
 	})
+	tileRs[BlueCoralGateOff] = render.NewCompound("open", map[string]render.Modifiable{
+		"closed": jsh[5][6].Copy(),
+		"open":   jsh[5][5].Copy(),
+	})
 	tileRs[TealCoralGate] = render.NewCompound("closed", map[string]render.Modifiable{
+		"closed": jsh[6][6].Copy(),
+		"open":   jsh[6][5].Copy(),
+	})
+	tileRs[TealCoralGateOff] = render.NewCompound("open", map[string]render.Modifiable{
 		"closed": jsh[6][6].Copy(),
 		"open":   jsh[6][5].Copy(),
 	})
@@ -74,6 +89,10 @@ func InitTiles() {
 	})
 	tileRs[SandKey] = jsh[2][5].Copy()
 	tileRs[CoralExit] = jsh[3][5].Copy()
+	tileRs[Sandtrap] = render.NewCompound("hole", map[string]render.Modifiable{
+		"hole":   jsh[3][7].Copy(),
+		"filled": jsh[3][6].Copy(),
+	})
 }
 
 func (t Tile) Place(x, y int) {

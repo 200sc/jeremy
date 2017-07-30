@@ -95,7 +95,9 @@ func NewJeremy(x, y float64) *Jeremy {
 	j.Bind(consumeSand, "KeyDownE")
 	j.Bind(placeGlob, "KeyDownSpacebar")
 	j.Bind(pauseJeremy, "PausePlayer")
+
 	j.RSpace.Add(Blocking, jeremyStop)
+	j.RSpace.Add(collision.Label(Sandtrap), jeremyStop)
 
 	render.Draw(j.R, 3)
 	j.SetPos(x, y)
@@ -112,6 +114,10 @@ func placeGlob(id int, nothing interface{}) int {
 	j := event.GetEntity(id).(*Jeremy)
 	x := int((j.X()+8)/16) + int(j.dir.X())
 	y := int((j.Y()+8)/16) + int(j.dir.Y())
+	if collision.HitLabel(collision.NewUnassignedSpace(float64(x*16)+2, float64(y*16)+2, 12, 12), Blocking, collision.Label(JeremyTile)) != nil {
+		return 0
+	}
+
 	if j.sand == 4 {
 		SandKey.Place(x, y)
 		j.sand = 0
