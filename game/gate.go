@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/oakmound/oak/collision"
@@ -96,7 +95,6 @@ func gateOpen(id int, nothing interface{}) int {
 	g := event.GetEntity(id).(*Gate)
 	g.lock.Lock()
 	if g.active {
-		fmt.Println("Removing ", g.s1)
 		g.r.Set("open")
 		collision.Remove(g.s1)
 		g.active = false
@@ -109,7 +107,6 @@ func gateClose(id int, nothing interface{}) int {
 	g := event.GetEntity(id).(*Gate)
 	g.lock.Lock()
 	if !g.active {
-		fmt.Println("Adding ", g.s1)
 		g.r.Set("closed")
 		collision.Add(g.s1)
 		g.active = true
