@@ -6,24 +6,23 @@ import (
 	"github.com/oakmound/oak/render"
 )
 
-type Switch struct {
+type floorSwitch struct {
 	collision.Phase
 	event.CID
 	touching int
 }
 
-func (s *Switch) Init() event.CID {
+func (s *floorSwitch) Init() event.CID {
 	s.CID = event.NextID(s)
 	return s.CID
 }
 
-func switchInit(t Tile) func(int, int, render.Renderable) {
-	gc := t.GateColor()
+func switchInit(t tile) func(int, int, render.Renderable) {
+	gc := t.gateColor()
 	return func(x, y int, r render.Renderable) {
 		xf, yf := float64(x)*16, float64(y)*16
-		s := new(Switch)
-		s.Init()
-		sp := collision.NewSpace(xf+6, yf+6, 4, 4, s.CID)
+		s := new(floorSwitch)
+		sp := collision.NewSpace(xf+6, yf+6, 4, 4, s.Init())
 		collision.Add(sp)
 		collision.PhaseCollision(sp)
 		s.Bind(switchOn(gc), "CollisionStart")
@@ -31,11 +30,11 @@ func switchInit(t Tile) func(int, int, render.Renderable) {
 	}
 }
 
-func switchOn(gc GateColor) func(id int, label interface{}) int {
+func switchOn(gc gateColor) func(id int, label interface{}) int {
 	return func(id int, label interface{}) int {
-		s := event.GetEntity(id).(*Switch)
+		s := event.GetEntity(id).(*floorSwitch)
 		switch label.(collision.Label) {
-		case collision.Label(Sandglob), collision.Label(JeremyTile), Blocking:
+		case collision.Label(sandglob), collision.Label(jeremyTile), blocking:
 			s.touching++
 			if s.touching == 1 {
 				event.Trigger("Open"+gc.String(), nil)
@@ -45,11 +44,11 @@ func switchOn(gc GateColor) func(id int, label interface{}) int {
 	}
 }
 
-func switchOff(gc GateColor) func(id int, label interface{}) int {
+func switchOff(gc gateColor) func(id int, label interface{}) int {
 	return func(id int, label interface{}) int {
-		s := event.GetEntity(id).(*Switch)
+		s := event.GetEntity(id).(*floorSwitch)
 		switch label.(collision.Label) {
-		case collision.Label(Sandglob), collision.Label(JeremyTile), Blocking:
+		case collision.Label(sandglob), collision.Label(jeremyTile), blocking:
 			s.touching--
 			if s.touching == 0 {
 				event.Trigger("Close"+gc.String(), nil)
@@ -59,11 +58,11 @@ func switchOff(gc GateColor) func(id int, label interface{}) int {
 	}
 }
 
-func alternatingSwitchInit(t Tile) func(int, int, render.Renderable) {
-	gc := t.GateColor()
+func alternatingSwitchInit(t tile) func(int, int, render.Renderable) {
+	gc := t.gateColor()
 	return func(x, y int, r render.Renderable) {
 		xf, yf := float64(x)*16, float64(y)*16
-		s := new(Switch)
+		s := new(floorSwitch)
 		s.Init()
 		sp := collision.NewSpace(xf+6, yf+6, 4, 4, s.CID)
 		collision.Add(sp)
@@ -77,10 +76,10 @@ var (
 )
 
 // theoretically only green gates use alternating switches
-func alternatingSwitch(gc GateColor) func(id int, label interface{}) int {
+func alternatingSwitch(gc gateColor) func(id int, label interface{}) int {
 	return func(id int, label interface{}) int {
 		switch label.(collision.Label) {
-		case collision.Label(Sandglob), collision.Label(JeremyTile), Blocking:
+		case collision.Label(sandglob), collision.Label(jeremyTile), blocking:
 			greenSwitchTracker = (greenSwitchTracker + 1) % 2
 			if greenSwitchTracker == 0 {
 				event.Trigger("Close"+gc.String(), nil)

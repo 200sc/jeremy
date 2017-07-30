@@ -10,12 +10,17 @@ import (
 	"github.com/oakmound/oak/render"
 )
 
-type Crab struct {
+type crab struct {
+	// Could make crabs interactive, so they have speed, delta, etc, and could
+	// be pushed with mass just like jeremy.
 	entities.Solid
 }
 
-func NewVerticalCrab(x, y int, r render.Renderable) {
-	c := new(Crab)
+// Crabs are either vertical or horizontal.
+// They follow the player along a single axis.
+
+func newVerticalCrab(x, y int, r render.Renderable) {
+	c := new(crab)
 	xf, yf := float64(x*16), float64(y*16)
 	jsh := render.GetSheet(filepath.Join("16", "jeremy.png"))
 	r = render.NewCompound("still", map[string]render.Modifiable{
@@ -23,13 +28,13 @@ func NewVerticalCrab(x, y int, r render.Renderable) {
 		"moving": render.NewSequence([]render.Modifiable{jsh[2][3].Copy(), jsh[2][4].Copy()}, 12),
 	})
 	c.Solid = entities.NewSolid(xf+2, yf+2, 12, 12, r, c.Init())
-	c.Space.UpdateLabel(Blocking)
+	c.Space.UpdateLabel(blocking)
 	render.Draw(c.R, 3)
 	c.Bind(vCrabFollow, "EnterFrame")
 }
 
-func NewHorizontalCrab(x, y int, r render.Renderable) {
-	c := new(Crab)
+func newHorizontalCrab(x, y int, r render.Renderable) {
+	c := new(crab)
 	xf, yf := float64(x*16), float64(y*16)
 	jsh := render.GetSheet(filepath.Join("16", "jeremy.png"))
 	r = render.NewCompound("still", map[string]render.Modifiable{
@@ -37,22 +42,22 @@ func NewHorizontalCrab(x, y int, r render.Renderable) {
 		"moving": render.NewSequence([]render.Modifiable{jsh[3][3].Copy(), jsh[3][4].Copy()}, 12),
 	})
 	c.Solid = entities.NewSolid(xf+2, yf+2, 12, 12, r, c.Init())
-	c.Space.UpdateLabel(Blocking)
+	c.Space.UpdateLabel(blocking)
 	render.Draw(c.R, 3)
 	c.Bind(hCrabFollow, "EnterFrame")
 }
 
 func vCrabFollow(id int, nothing interface{}) int {
 	c := event.GetEntity(id).(*entities.Solid)
-	if !alg.F64eq(c.Y(), JeremyPos.Y()) {
-		delta := JeremyPos.Y() - c.Y()
+	if !alg.F64eq(c.Y(), jeremyPos.Y()) {
+		delta := jeremyPos.Y() - c.Y()
 		if delta > 3.0 {
 			delta = 3.0
 		} else if delta < -3.0 {
 			delta = -3.0
 		}
 		c.ShiftY(delta)
-		if collision.HitLabel(c.Space, Blocking, collision.Label(Sandtrap)) != nil {
+		if collision.HitLabel(c.Space, blocking, collision.Label(sandtrap)) != nil {
 			c.ShiftY(-delta)
 		} else {
 			c.R.(*render.Compound).Set("moving")
@@ -65,15 +70,15 @@ func vCrabFollow(id int, nothing interface{}) int {
 
 func hCrabFollow(id int, nothing interface{}) int {
 	c := event.GetEntity(id).(*entities.Solid)
-	if !alg.F64eq(c.X(), JeremyPos.X()) {
-		delta := JeremyPos.X() - c.X()
+	if !alg.F64eq(c.X(), jeremyPos.X()) {
+		delta := jeremyPos.X() - c.X()
 		if delta > 3.0 {
 			delta = 3.0
 		} else if delta < -3.0 {
 			delta = -3.0
 		}
 		c.ShiftX(delta)
-		if collision.HitLabel(c.Space, Blocking, collision.Label(Sandtrap)) != nil {
+		if collision.HitLabel(c.Space, blocking, collision.Label(sandtrap)) != nil {
 			c.ShiftX(-delta)
 		} else {
 			c.R.(*render.Compound).Set("moving")

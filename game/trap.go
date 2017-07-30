@@ -13,7 +13,7 @@ import (
 	"github.com/oakmound/oak/shape"
 )
 
-type Trap struct {
+type trap struct {
 	r *render.Compound
 	event.CID
 	s         *collision.Space
@@ -21,24 +21,23 @@ type Trap struct {
 	emptyTime time.Time
 }
 
-func (t *Trap) Init() event.CID {
+func (t *trap) Init() event.CID {
 	t.CID = event.NextID(t)
 	return t.CID
 }
 
 func trapInit(x, y int, r render.Renderable) {
 	xf, yf := float64(x)*16, float64(y)*16
-	t := new(Trap)
+	t := new(trap)
 	t.r = r.(*render.Compound)
-	t.Init()
-	t.s = collision.NewFullSpace(xf, yf, 16, 16, collision.Label(Sandtrap), t.CID)
+	t.s = collision.NewFullSpace(xf, yf, 16, 16, collision.Label(sandtrap), t.Init())
 	collision.Add(t.s)
 	t.Bind(trapFill, "UseGlob")
 	t.Bind(trapEnter, "EnterFrame")
 }
 
 func trapEnter(id int, nothing interface{}) int {
-	t := event.GetEntity(id).(*Trap)
+	t := event.GetEntity(id).(*trap)
 	if t.r.Get() == "filled" && t.emptyTime.Before(time.Now()) {
 		t.r.Set("hole")
 		collision.Add(t.s)
@@ -48,9 +47,10 @@ func trapEnter(id int, nothing interface{}) int {
 }
 
 func trapFill(id int, nothing interface{}) int {
-	t := event.GetEntity(id).(*Trap)
+	t := event.GetEntity(id).(*trap)
 	t.r.Set("filled")
 	collision.Remove(t.s)
+	// "Falling sand" particles
 	t.ps = particle.NewColorGenerator(
 		particle.NewPerFrame(floatrange.NewLinear(2, 4)),
 		particle.Pos(t.r.GetX()+8, t.r.GetY()+8),
@@ -62,6 +62,7 @@ func trapFill(id int, nothing interface{}) int {
 		particle.Size(intrange.NewLinear(1, 2)),
 		particle.Shape(shape.Square),
 	).Generate(2)
+	// Once we pass this time, reset the hole to need to be filled again
 	t.emptyTime = time.Now().Add(3 * time.Second)
 	return 0
 }

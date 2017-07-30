@@ -14,10 +14,10 @@ import (
 )
 
 var (
-	JeremyPos physics.Vector
+	jeremyPos physics.Vector
 )
 
-type Jeremy struct {
+type jeremy struct {
 	entities.Interactive
 	physics.Mass
 	eyes                     *render.Compound
@@ -27,15 +27,16 @@ type Jeremy struct {
 	dir                      physics.Vector
 }
 
-func (j *Jeremy) Init() event.CID {
+func (j *jeremy) Init() event.CID {
 	j.CID = event.NextID(j)
 	return j.CID
 }
 
-func NewJeremy(x, y int, r render.Renderable) {
-	j := new(Jeremy)
+func newJeremy(x, y int, r render.Renderable) {
+	j := new(jeremy)
 
 	// Renderable setup
+	// Jeremy's main sprite
 	jsh := render.GetSheet(filepath.Join("16", "jeremy.png"))
 	cmp := render.NewCompound("still_down", map[string]render.Modifiable{
 		"still_down":        jsh[0][0].Copy(),
@@ -59,6 +60,7 @@ func NewJeremy(x, y int, r render.Renderable) {
 		"still_left_key":    jsh[4][1].Copy().Modify(render.FlipX),
 		"still_right_key":   jsh[4][1].Copy(),
 	})
+	// Jeremy's eyes
 	eyes, err := render.LoadSheetAnimation(filepath.Join("3", "eyes.png"), 3, 3, 0, 6, []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 0})
 	if err != nil {
 		log.Fatal(err)
@@ -84,6 +86,7 @@ func NewJeremy(x, y int, r render.Renderable) {
 		"still_left":  lefteyes,
 		"still_right": righteyes,
 	})
+	// Draw both of those at the same time
 	composite := render.NewComposite([]render.Modifiable{cmp, eyecmp})
 
 	// Non-renderable variables
@@ -92,47 +95,58 @@ func NewJeremy(x, y int, r render.Renderable) {
 	j.overlap = physics.NewVector(0, 0)
 	j.dir = physics.NewVector(0, 0)
 	j.SetMass(10)
-	j.RSpace.Space.UpdateLabel(collision.Label(JeremyTile))
+	j.RSpace.Space.UpdateLabel(collision.Label(jeremyTile))
 
 	// Bindings
+	// Do this every frame
 	j.Bind(enterJeremy, "EnterFrame")
+	// Do this when E is pressed
 	j.Bind(consumeSand, "KeyDownE")
+	// Do this when Spacebar is pressed
 	j.Bind(placeGlob, "KeyDownSpacebar")
+	// Do this when something triggers "pause" on Jeremy
 	j.Bind(pauseJeremy, "PausePlayer")
 
-	j.RSpace.Add(Blocking, jeremyStop)
-	j.RSpace.Add(collision.Label(Sandtrap), jeremyStop)
-	j.RSpace.Add(collision.Label(Treasure), pickUpTreasure)
+	// React to hitting certain collision spaces with these bindings:
+	j.RSpace.Add(blocking, jeremyStop)
+	j.RSpace.Add(collision.Label(sandtrap), jeremyStop)
+	j.RSpace.Add(collision.Label(treasure), pickUpTreasure)
 
+	// Draw yourself and place yourself according to the input x,y
 	render.Draw(j.R, 3)
 	j.SetPos(float64(x*16), float64(y*16))
-	JeremyPos = j.Vector
+
+	// Track a global so crabs know where you are and can follow you
+	jeremyPos = j.Vector
 }
 
+// When Jeremy is paused, they no longer respond to bindings.
 func pauseJeremy(id int, nothing interface{}) int {
-	j := event.GetEntity(id).(*Jeremy)
+	j := event.GetEntity(id).(*jeremy)
 	j.UnbindAll()
 	return 0
 }
 
+// When space is pressed, Jeremy tries to spit out sand in front of themselves.
 func placeGlob(id int, nothing interface{}) int {
-	j := event.GetEntity(id).(*Jeremy)
+	j := event.GetEntity(id).(*jeremy)
 	x := int((j.X()+8)/16) + int(j.dir.X())
 	y := int((j.Y()+8)/16) + int(j.dir.Y())
-	if collision.HitLabel(collision.NewUnassignedSpace(float64(x*16)+2, float64(y*16)+2, 12, 12), Blocking, collision.Label(JeremyTile)) != nil {
+	// If there's something in the way, don't place anything there.
+	if collision.HitLabel(collision.NewUnassignedSpace(float64(x*16)+2, float64(y*16)+2, 12, 12), blocking, collision.Label(jeremyTile)) != nil {
 		return 0
 	}
 
+	// If Jeremy has a key right now, drop a key.
 	if j.sand == 4 {
-		SandKey.Place(x, y)
+		sandKey.Place(x, y)
 		j.sand = 0
 		j.Speed.ShiftX(.3)
 		j.Speed.ShiftY(.3)
 		j.UpdateAnimation()
+		// Otherwise drop sand
 	} else if j.sand > 0 {
-		// Todo: right now you can place infinite sand on the same spot. It is tracked, but there's no
-		// visual indication how much sand is there.
-		Sandglob.Place(x, y)
+		sandglob.Place(x, y)
 		j.sand--
 		j.Speed.ShiftX(0.1)
 		j.Speed.ShiftY(0.1)
@@ -141,13 +155,15 @@ func placeGlob(id int, nothing interface{}) int {
 	return 0
 }
 
+// When E is pressed, jeremy tries to suck up the sand in front of them
 func consumeSand(id int, nothing interface{}) int {
-	j := event.GetEntity(id).(*Jeremy)
+	j := event.GetEntity(id).(*jeremy)
 	s := collision.NewUnassignedSpace((j.X()+8)+16*j.dir.X(), (j.Y()+8)+16*j.dir.Y(), 1, 1)
+	// You can pick up keys if you don't have any other sand
 	if j.sand == 0 {
 		hit := collision.HitLabel(
 			s,
-			collision.Label(SandKey),
+			collision.Label(sandKey),
 		)
 		if hit != nil {
 			hit.CID.Trigger("Consume", nil)
@@ -158,10 +174,11 @@ func consumeSand(id int, nothing interface{}) int {
 			return 0
 		}
 	}
+	// Otherwise you can pick up up to three sand globs
 	if j.sand < 3 {
 		hit := collision.HitLabel(
 			s,
-			collision.Label(Sandglob),
+			collision.Label(sandglob),
 		)
 		if hit != nil {
 			hit.CID.Trigger("Consume", nil)
@@ -175,8 +192,12 @@ func consumeSand(id int, nothing interface{}) int {
 }
 
 func enterJeremy(id int, frame interface{}) int {
-	j := event.GetEntity(id).(*Jeremy)
+	j := event.GetEntity(id).(*jeremy)
+	// Slow down whatever Jeremy's old delta to move was
 	j.ApplyFriction(envFriction)
+
+	// Increase Jeremy's delta and set their direction according to what keys are
+	// pressed.
 	if oak.IsDown("W") {
 		j.Delta.SetY(j.Delta.Y() - j.Speed.Y())
 		j.dir.SetPos(0, -1)
@@ -196,8 +217,10 @@ func enterJeremy(id int, frame interface{}) int {
 	j.ShiftPos(j.Delta.X(), j.Delta.Y())
 	j.UpdateAnimation()
 
-	// Handle collision (with blocking things, jeremy doesn't collide with anything else)
+	// Handle reactive collision
 	<-j.RSpace.CallOnHits()
+	// If something hit jeremy, determine how much Jeremy should move
+	// back by to get out of it.
 	if j.stopMovingX || j.stopMovingY {
 		v := j.overlap.Copy().Scale(-1)
 		if math.Abs(v.X()) > math.Abs(j.Delta.X()) {
@@ -219,8 +242,7 @@ func enterJeremy(id int, frame interface{}) int {
 	return 0
 }
 
-func (j *Jeremy) UpdateAnimation() {
-	// Todo: make this composite setting easier
+func (j *jeremy) UpdateAnimation() {
 	cmp := j.R.(*render.Composite)
 	if j.Delta.Magnitude() > 0.4 {
 		var s string
@@ -237,14 +259,18 @@ func (j *Jeremy) UpdateAnimation() {
 				s = "still_down"
 			}
 		}
+		// If we might have changed directions, update the eyes
 		cmp.Get(1).(*render.Compound).Set(s)
 	}
 	s := cmp.Get(1).(*render.Compound).Get()
 	s += j.SandString()
+	// Always update the sand level that jeremy has consumed
 	cmp.Get(0).(*render.Compound).Set(s)
 }
 
-func (j *Jeremy) SandString() string {
+// This converts how much sand jeremy has into what string that
+// represents on their animation compound.
+func (j *jeremy) SandString() string {
 	switch j.sand {
 	case 1:
 		return "_sand1"
@@ -265,20 +291,12 @@ func pickUpTreasure(s, s2 *collision.Space) {
 func jeremyStop(s, s2 *collision.Space) {
 	if s.CID != s2.CID {
 		id1 := int(s.CID)
-		j := event.GetEntity(id1).(*Jeremy)
+		j := event.GetEntity(id1).(*jeremy)
 		j.SetStopXY(s2)
-		// Push what we ran into (if we end up having pushable things)
-		v := j.Delta.Copy()
-		if j.stopMovingX {
-			v.SetY(0)
-		} else if j.stopMovingY {
-			v.SetX(0)
-		}
-		s2.CID.Trigger("push", physics.DefaultForceVector(v, j.GetMass()))
 	}
 }
 
-func (j *Jeremy) SetStopXY(s *collision.Space) {
+func (j *jeremy) SetStopXY(s *collision.Space) {
 	xOver, yOver := j.RSpace.Space.Overlap(s)
 
 	if math.Abs(xOver) < math.Abs(yOver) {

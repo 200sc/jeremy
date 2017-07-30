@@ -1,8 +1,7 @@
 package game
 
-// Tile enum
 const (
-	_ Tile = iota
+	_ tile = iota
 	_
 	_
 	_
@@ -14,29 +13,29 @@ const (
 	_
 	// We start at 10, so the csvs can be more easily read (evenly spaced columns)
 	// Subtract 7 from the line number for the csv number
-	Sand
-	Coral
-	PurpleCoralGate
-	PurpleCoralSwitch
-	BlueCoralGate
-	BlueCoralSwitch
-	TealCoralGate
-	TealCoralSwitch
-	Sandtrap
-	Sandglob
-	Sandgeyser
-	JeremyTile
-	VerticalCrab
-	Treasure
-	SandKey
-	CoralExit
-	GreenCoralGate
-	GreenCoralSwitch
-	GreenCoralGateOff
-	PurpleCoralGateOff
-	BlueCoralGateOff
-	TealCoralGateOff
-	HorizontalCrab
+	sand
+	coral
+	purpleCoralGate
+	purpleCoralSwitch
+	blueCoralGate
+	blueCoralSwitch
+	tealCoralGate
+	tealCoralSwitch
+	sandtrap
+	sandglob
+	sandgeyser
+	jeremyTile
+	verticalCrab
+	treasure
+	sandKey
+	coralExit
+	greenCoralGate
+	greenCoralSwitch
+	greenCoralGateOff
+	purpleCoralGateOff
+	blueCoralGateOff
+	tealCoralGateOff
+	horizontalCrab
 )
 
-type Tile int
+type tile int

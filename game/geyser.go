@@ -14,8 +14,8 @@ import (
 func geyserInit(x, y int, r render.Renderable) {
 	xf, yf := float64(x)*16, float64(y)*16
 	// Set up a sandglob collision space, but don't bind anything to happen on consume
-	collision.Add(collision.NewLabeledSpace(xf, yf, 16, 16, collision.Label(Sandglob)))
-	collision.Add(collision.NewLabeledSpace(xf, yf, 16, 16, Blocking))
+	collision.Add(collision.NewLabeledSpace(xf, yf, 16, 16, collision.Label(sandglob)))
+	collision.Add(collision.NewLabeledSpace(xf, yf, 16, 16, blocking))
 	// Make particles
 	particle.NewColorGenerator(
 		particle.NewPerFrame(floatrange.NewLinear(2, 4)),
