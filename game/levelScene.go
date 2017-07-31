@@ -25,7 +25,7 @@ func LevelStart(prevScene string, data interface{}) {
 	event.GlobalBind(func(int, interface{}) int {
 		ok, d := oak.IsHeld("R")
 		if ok && d > time.Millisecond*1500 {
-			//currentLevel--
+			currentLevel--
 			levelComplete = true
 		}
 		return 0
