@@ -8,6 +8,10 @@ Run `go get -u github.com/200sc/jeremy/...`
 
 Then `go run core.go` in that folder to run the program.
 
+### Linux
+
+You'll also need ALSA: `sudo apt-get install alsa-base libasound2-dev`
+
 ## Controls
 
 E to pick up sand from geysers or hills, or keys.
