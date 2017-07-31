@@ -25,7 +25,7 @@ func LevelStart(prevScene string, data interface{}) {
 	event.GlobalBind(func(int, interface{}) int {
 		ok, d := oak.IsHeld("R")
 		if ok && d > time.Millisecond*1500 {
-			currentLevel--
+			//currentLevel--
 			levelComplete = true
 		}
 		return 0
@@ -45,7 +45,7 @@ func LevelLoop() bool {
 func LevelEnd() (string, *oak.SceneResult) {
 	levelInit = false
 	levelComplete = false
-	currentLevel++
+	currentLevel = (currentLevel + 1) % len(levels)
 	res := &oak.SceneResult{
 		Transition: oak.TransitionFade(.001, 500),
 	}

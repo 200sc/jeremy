@@ -14,6 +14,5 @@ var (
 	levelStore = make(map[string]level)
 	levels     = []string{"menu",
 		"tutorial1", "tutorial2", "tutorial3", "tutorial4", "tutorial5", "tutorial6",
-		"level1", "level2", "level3", "level4", "level5", "level6", "level7", "level8", "level9"}
-	//"victory"}
+		"level1", "level2", "level3", "level4", "level5", "level6", "level7", "level8", "level9", "victory"}
 )
