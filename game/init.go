@@ -55,6 +55,7 @@ func init() {
 		jeremyTile:         newJeremy,
 		horizontalCrab:     newHorizontalCrab,
 		verticalCrab:       newVerticalCrab,
+		startButton:        initStartButton,
 	}
 }
 

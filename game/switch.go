@@ -53,7 +53,7 @@ func switchOff(gc gateColor) func(id int, label interface{}) int {
 		case collision.Label(sandglob), collision.Label(jeremyTile), blocking:
 			s.touching--
 			if s.touching == 0 {
-				audio.Play(sounds, "ButtonUp.wav")
+				audio.Play(sounds, "ButtonDown.wav")
 				event.Trigger("Close"+gc.String(), nil)
 			}
 		}
@@ -85,7 +85,7 @@ func alternatingSwitch(gc gateColor) func(id int, label interface{}) int {
 		case collision.Label(sandglob), collision.Label(jeremyTile), blocking:
 			greenSwitchTracker = (greenSwitchTracker + 1) % 2
 			if greenSwitchTracker == 0 {
-				audio.Play(sounds, "ButtonUp.wav")
+				audio.Play(sounds, "ButtonDown.wav")
 				event.Trigger("Close"+gc.String(), nil)
 			} else {
 				audio.Play(sounds, "ButtonDown.wav")

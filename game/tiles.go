@@ -40,6 +40,7 @@ var (
 		sandKey:            logical,
 		coralExit:          logical,
 		jeremyTile:         entity,
+		startButton:        entity,
 	}
 	initFunctions map[tile]func(int, int, render.Renderable)
 )

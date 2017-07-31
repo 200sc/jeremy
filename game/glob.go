@@ -25,6 +25,7 @@ func globInit(x, y int, r render.Renderable) {
 	g.Vector = physics.NewVector(xf, yf)
 	g.r = r
 	g.Init()
+	// Consider: bitwise OR for collision labels? so we would only need one space here
 	g.s1 = collision.NewFullSpace(xf+2, yf+2, 12, 12, collision.Label(sandglob), g.CID)
 	g.s2 = collision.NewFullSpace(xf+2, yf+2, 12, 12, blocking, g.CID)
 	hit := collision.HitLabel(g.s1, collision.Label(sandtrap))

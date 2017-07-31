@@ -1,5 +1,7 @@
 package game
 
+type tile int
+
 const (
 	_ tile = iota
 	_
@@ -12,7 +14,7 @@ const (
 	_
 	_
 	// We start at 10, so the csvs can be more easily read (evenly spaced columns)
-	// Subtract 7 from the line number for the csv number
+	// Subtract 8 from the line number for the csv number
 	sand
 	coral
 	purpleCoralGate
@@ -36,6 +38,5 @@ const (
 	blueCoralGateOff
 	tealCoralGateOff
 	horizontalCrab
+	startButton
 )
-
-type tile int

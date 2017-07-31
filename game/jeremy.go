@@ -133,9 +133,15 @@ func placeGlob(id int, nothing interface{}) int {
 	j := event.GetEntity(id).(*jeremy)
 	x := int((j.X()+8)/16) + int(j.dir.X())
 	y := int((j.Y()+8)/16) + int(j.dir.Y())
-	// If there's something in the way, don't place anything there.
-	if collision.HitLabel(collision.NewUnassignedSpace(float64(x*16)+2, float64(y*16)+2, 12, 12), blocking, collision.Label(jeremyTile)) != nil {
-		return 0
+	s := collision.NewUnassignedSpace(float64(x*16)+2, float64(y*16)+2, 12, 12)
+	// If there's something in the way, try to place a little farther
+	if collision.HitLabel(s, blocking, collision.Label(jeremyTile)) != nil {
+		collision.ShiftSpace(j.dir.X(), j.dir.Y(), s)
+		if collision.HitLabel(s, blocking, collision.Label(jeremyTile)) != nil {
+			return 0
+		}
+		x += int(j.dir.X())
+		y += int(j.dir.Y())
 	}
 
 	// If Jeremy has a key right now, drop a key.

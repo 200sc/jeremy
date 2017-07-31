@@ -21,7 +21,6 @@ func LevelStart(prevScene string, data interface{}) {
 	levelName := levels[currentLevel]
 	l := levelStore[levelName]
 	l.Place()
-
 	// This is the 'reset level' binding.
 	event.GlobalBind(func(int, interface{}) int {
 		ok, d := oak.IsHeld("R")
