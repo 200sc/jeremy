@@ -47,7 +47,7 @@ func LevelEnd() (string, *oak.SceneResult) {
 	levelComplete = false
 	currentLevel = (currentLevel + 1) % len(levels)
 	res := &oak.SceneResult{
-		Transition: oak.TransitionFade(.001, 500),
+		Transition: oak.TransitionFade(.1, 50),
 	}
 	return "level", res
 }
