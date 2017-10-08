@@ -12,6 +12,7 @@ import (
 	"github.com/oakmound/oak/event"
 	"github.com/oakmound/oak/physics"
 	"github.com/oakmound/oak/render"
+	"github.com/oakmound/oak/render/mod"
 )
 
 var (
@@ -21,7 +22,7 @@ var (
 type jeremy struct {
 	entities.Interactive
 	physics.Mass
-	eyes                     *render.Compound
+	eyes                     *render.Switch
 	stopMovingX, stopMovingY bool
 	overlap                  physics.Vector
 	sand                     int
@@ -39,41 +40,41 @@ func newJeremy(x, y int, r render.Renderable) {
 	// Renderable setup
 	// Jeremy's main sprite
 	jsh := render.GetSheet(filepath.Join("16", "jeremy.png"))
-	cmp := render.NewCompound("still_down", map[string]render.Modifiable{
+	cmp := render.NewSwitch("still_down", map[string]render.Modifiable{
 		"still_down":        jsh[0][0].Copy(),
 		"still_up":          jsh[0][2].Copy(),
-		"still_left":        jsh[0][1].Copy().Modify(render.FlipX),
+		"still_left":        jsh[0][1].Copy().Modify(mod.FlipX),
 		"still_right":       jsh[0][1].Copy(),
 		"still_down_sand1":  jsh[1][0].Copy(),
 		"still_up_sand1":    jsh[1][2].Copy(),
-		"still_left_sand1":  jsh[1][1].Copy().Modify(render.FlipX),
+		"still_left_sand1":  jsh[1][1].Copy().Modify(mod.FlipX),
 		"still_right_sand1": jsh[1][1].Copy(),
 		"still_down_sand2":  jsh[2][0].Copy(),
 		"still_up_sand2":    jsh[2][2].Copy(),
-		"still_left_sand2":  jsh[2][1].Copy().Modify(render.FlipX),
+		"still_left_sand2":  jsh[2][1].Copy().Modify(mod.FlipX),
 		"still_right_sand2": jsh[2][1].Copy(),
 		"still_down_sand3":  jsh[3][0].Copy(),
 		"still_up_sand3":    jsh[3][2].Copy(),
-		"still_left_sand3":  jsh[3][1].Copy().Modify(render.FlipX),
+		"still_left_sand3":  jsh[3][1].Copy().Modify(mod.FlipX),
 		"still_right_sand3": jsh[3][1].Copy(),
 		"still_down_key":    jsh[4][0].Copy(),
 		"still_up_key":      jsh[4][2].Copy(),
-		"still_left_key":    jsh[4][1].Copy().Modify(render.FlipX),
+		"still_left_key":    jsh[4][1].Copy().Modify(mod.FlipX),
 		"still_right_key":   jsh[4][1].Copy(),
 	})
 	// Jeremy's eyes
-	eyes, err := render.LoadSheetAnimation(filepath.Join("3", "eyes.png"), 3, 3, 0, 6, []int{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 0})
+	eyes, err := render.LoadSheetSequence(filepath.Join("3", "eyes.png"), 3, 3, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
 	//
-	downeyes := render.NewComposite([]render.Modifiable{eyes.Copy(), eyes.Copy().Modify(render.FlipX)})
+	downeyes := render.NewComposite(eyes.Copy(), eyes.Copy().Modify(mod.FlipX))
 	downeyes.Get(0).ShiftX(4)
 	downeyes.Get(0).ShiftY(8)
 	downeyes.Get(1).ShiftX(9)
 	downeyes.Get(1).ShiftY(8)
 	//
-	lefteyes := eyes.Copy().Modify(render.FlipX)
+	lefteyes := eyes.Copy().Modify(mod.FlipX)
 	lefteyes.ShiftX(1)
 	lefteyes.ShiftY(8)
 	//
@@ -81,14 +82,18 @@ func newJeremy(x, y int, r render.Renderable) {
 	righteyes.ShiftX(12)
 	righteyes.ShiftY(8)
 	//
-	eyecmp := render.NewCompound("still_down", map[string]render.Modifiable{
+	eyecmp := render.NewSwitch("still_down", map[string]render.Modifiable{
 		"still_down":  downeyes,
 		"still_up":    render.EmptyRenderable(),
 		"still_left":  lefteyes,
 		"still_right": righteyes,
 	})
+	//eyecmp.SetOffsets("still_left", physics.NewVector(1, 8))
+	//eyecmp.SetOffsets("still_right", physics.NewVector(12, 8))
+	//eyecmp.ShiftX(-14)
+	//eyecmp.ShiftY(-24)
 	// Draw both of those at the same time
-	composite := render.NewComposite([]render.Modifiable{cmp, eyecmp})
+	composite := render.NewComposite(cmp, eyecmp)
 
 	// Non-renderable variables
 	j.Interactive = entities.NewInteractive(0, 0, 14, 14, composite, j.Init(), 0.4)
@@ -271,12 +276,12 @@ func (j *jeremy) UpdateAnimation() {
 			}
 		}
 		// If we might have changed directions, update the eyes
-		cmp.Get(1).(*render.Compound).Set(s)
+		cmp.Get(1).(*render.Switch).Set(s)
 	}
-	s := cmp.Get(1).(*render.Compound).Get()
+	s := cmp.Get(1).(*render.Switch).Get()
 	s += j.SandString()
 	// Always update the sand level that jeremy has consumed
-	cmp.Get(0).(*render.Compound).Set(s)
+	cmp.Get(0).(*render.Switch).Set(s)
 }
 
 // This converts how much sand jeremy has into what string that

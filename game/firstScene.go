@@ -2,7 +2,7 @@ package game
 
 import (
 	"github.com/200sc/klangsynthese/font"
-	"github.com/oakmound/oak"
+	"github.com/oakmound/oak/scene"
 )
 
 var (
@@ -20,6 +20,6 @@ func FirstSceneLoop() bool {
 	return false
 }
 
-func FirstSceneEnd() (string, *oak.SceneResult) {
+func FirstSceneEnd() (string, *scene.Result) {
 	return "level", nil
 }

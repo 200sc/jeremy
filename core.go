@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	oak.AddScene("level", game.LevelStart, game.LevelLoop, game.LevelEnd)
-	oak.AddScene("first", game.FirstSceneInit, game.FirstSceneLoop, game.FirstSceneEnd)
+	oak.Add("level", game.LevelStart, game.LevelLoop, game.LevelEnd)
+	oak.Add("first", game.FirstSceneInit, game.FirstSceneLoop, game.FirstSceneEnd)
 	oak.LoadConf("oak.config")
 	oak.Init("first")
 }

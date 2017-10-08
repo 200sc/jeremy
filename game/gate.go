@@ -51,7 +51,7 @@ func (gc gateColor) String() string {
 
 type gate struct {
 	physics.Vector
-	r  *render.Compound
+	r  *render.Switch
 	s1 *collision.Space
 	event.CID
 	lock   sync.Mutex
@@ -66,7 +66,7 @@ func (g *gate) Init() event.CID {
 func newGate(x, y float64, r render.Renderable) *gate {
 	g := new(gate)
 	g.lock = sync.Mutex{}
-	g.r = r.(*render.Compound)
+	g.r = r.(*render.Switch)
 	g.s1 = collision.NewFullSpace(x+2, y+2, 12, 12, blocking, g.Init())
 	return g
 }

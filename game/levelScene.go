@@ -5,6 +5,7 @@ import (
 
 	"github.com/oakmound/oak"
 	"github.com/oakmound/oak/event"
+	"github.com/oakmound/oak/scene"
 )
 
 var (
@@ -42,12 +43,12 @@ func LevelLoop() bool {
 // When a level ends, it increments to the next level and sets up a fade
 // transition.
 
-func LevelEnd() (string, *oak.SceneResult) {
+func LevelEnd() (string, *scene.Result) {
 	levelInit = false
 	levelComplete = false
 	currentLevel = (currentLevel + 1) % len(levels)
-	res := &oak.SceneResult{
-		Transition: oak.TransitionFade(.001, 500),
+	res := &scene.Result{
+		Transition: scene.Fade(.1, 50),
 	}
 	return "level", res
 }

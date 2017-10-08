@@ -15,7 +15,7 @@ import (
 )
 
 type trap struct {
-	r *render.Compound
+	r *render.Switch
 	event.CID
 	s         *collision.Space
 	ps        *particle.Source
@@ -30,7 +30,7 @@ func (t *trap) Init() event.CID {
 func trapInit(x, y int, r render.Renderable) {
 	xf, yf := float64(x)*16, float64(y)*16
 	t := new(trap)
-	t.r = r.(*render.Compound)
+	t.r = r.(*render.Switch)
 	t.s = collision.NewFullSpace(xf, yf, 16, 16, collision.Label(sandtrap), t.Init())
 	collision.Add(t.s)
 	t.Bind(trapFill, "UseGlob")
@@ -55,7 +55,7 @@ func trapFill(id int, nothing interface{}) int {
 	// "Falling sand" particles
 	t.ps = particle.NewColorGenerator(
 		particle.NewPerFrame(floatrange.NewLinear(2, 4)),
-		particle.Pos(t.r.GetX()+8, t.r.GetY()+8),
+		particle.Pos(t.r.X()+8, t.r.Y()+8),
 		particle.LifeSpan(floatrange.NewLinear(7, 12)),
 		particle.Angle(floatrange.Constant(270)),
 		particle.Speed(floatrange.NewLinear(.1, .4)),

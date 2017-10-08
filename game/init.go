@@ -74,41 +74,41 @@ func initTiles() {
 	tileRs[tealCoralSwitch] = jsh[6][4].Copy()
 	tileRs[greenCoralSwitch] = jsh[7][4].Copy()
 
-	tileRs[purpleCoralGate] = render.NewCompound("closed", map[string]render.Modifiable{
+	tileRs[purpleCoralGate] = render.NewSwitch("closed", map[string]render.Modifiable{
 		"closed": jsh[4][6].Copy(),
 		"open":   jsh[4][5].Copy(),
 	})
-	tileRs[purpleCoralGateOff] = render.NewCompound("open", map[string]render.Modifiable{
+	tileRs[purpleCoralGateOff] = render.NewSwitch("open", map[string]render.Modifiable{
 		"closed": jsh[4][6].Copy(),
 		"open":   jsh[4][5].Copy(),
 	})
-	tileRs[blueCoralGate] = render.NewCompound("closed", map[string]render.Modifiable{
+	tileRs[blueCoralGate] = render.NewSwitch("closed", map[string]render.Modifiable{
 		"closed": jsh[5][6].Copy(),
 		"open":   jsh[5][5].Copy(),
 	})
-	tileRs[blueCoralGateOff] = render.NewCompound("open", map[string]render.Modifiable{
+	tileRs[blueCoralGateOff] = render.NewSwitch("open", map[string]render.Modifiable{
 		"closed": jsh[5][6].Copy(),
 		"open":   jsh[5][5].Copy(),
 	})
-	tileRs[tealCoralGate] = render.NewCompound("closed", map[string]render.Modifiable{
+	tileRs[tealCoralGate] = render.NewSwitch("closed", map[string]render.Modifiable{
 		"closed": jsh[6][6].Copy(),
 		"open":   jsh[6][5].Copy(),
 	})
-	tileRs[tealCoralGateOff] = render.NewCompound("open", map[string]render.Modifiable{
+	tileRs[tealCoralGateOff] = render.NewSwitch("open", map[string]render.Modifiable{
 		"closed": jsh[6][6].Copy(),
 		"open":   jsh[6][5].Copy(),
 	})
-	tileRs[greenCoralGate] = render.NewCompound("closed", map[string]render.Modifiable{
+	tileRs[greenCoralGate] = render.NewSwitch("closed", map[string]render.Modifiable{
 		"closed": jsh[7][6].Copy(),
 		"open":   jsh[7][5].Copy(),
 	})
-	tileRs[greenCoralGateOff] = render.NewCompound("open", map[string]render.Modifiable{
+	tileRs[greenCoralGateOff] = render.NewSwitch("open", map[string]render.Modifiable{
 		"closed": jsh[7][6].Copy(),
 		"open":   jsh[7][5].Copy(),
 	})
 	tileRs[sandKey] = jsh[2][5].Copy()
 	tileRs[coralExit] = jsh[3][5].Copy()
-	tileRs[sandtrap] = render.NewCompound("hole", map[string]render.Modifiable{
+	tileRs[sandtrap] = render.NewSwitch("hole", map[string]render.Modifiable{
 		"hole":   jsh[3][7].Copy(),
 		"filled": jsh[3][6].Copy(),
 	})
