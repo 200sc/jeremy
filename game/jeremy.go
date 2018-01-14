@@ -96,7 +96,7 @@ func newJeremy(x, y int, r render.Renderable) {
 	composite := render.NewComposite(cmp, eyecmp)
 
 	// Non-renderable variables
-	j.Interactive = entities.NewInteractive(0, 0, 14, 14, composite, j.Init(), 0.4)
+	j.Interactive = entities.NewInteractive(0, 0, 14, 14, composite, nil, j.Init(), 0.4)
 	j.Speed = physics.NewVector(.5, .5)
 	j.overlap = physics.NewVector(0, 0)
 	j.dir = physics.NewVector(0, 0)

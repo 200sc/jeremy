@@ -32,7 +32,7 @@ func treasureInit(x, y int, r render.Renderable) {
 func treasureDestroy(id int, nothing interface{}) int {
 	audio.Play(sounds, "Treasure.wav")
 	t := event.GetEntity(id).(*treasureBox)
-	t.r.UnDraw()
+	t.r.Undraw()
 	collision.Remove(t.s)
 	event.DestroyEntity(id)
 	return 0

@@ -27,7 +27,7 @@ func newVerticalCrab(x, y int, r render.Renderable) {
 		"still":  jsh[2][3].Copy(),
 		"moving": render.NewSequence(12, jsh[2][3].Copy(), jsh[2][4].Copy()),
 	})
-	c.Solid = entities.NewSolid(xf+2, yf+2, 12, 12, r, c.Init())
+	c.Solid = entities.NewSolid(xf+2, yf+2, 12, 12, r, nil, c.Init())
 	c.Space.UpdateLabel(blocking)
 	render.Draw(c.R, 3)
 	c.Bind(vCrabFollow, "EnterFrame")
@@ -41,7 +41,7 @@ func newHorizontalCrab(x, y int, r render.Renderable) {
 		"still":  jsh[3][3].Copy(),
 		"moving": render.NewSequence(12, jsh[3][3].Copy(), jsh[3][4].Copy()),
 	})
-	c.Solid = entities.NewSolid(xf+2, yf+2, 12, 12, r, c.Init())
+	c.Solid = entities.NewSolid(xf+2, yf+2, 12, 12, r, nil, c.Init())
 	c.Space.UpdateLabel(blocking)
 	render.Draw(c.R, 3)
 	c.Bind(hCrabFollow, "EnterFrame")

@@ -32,13 +32,13 @@ func keyInit(x, y int, r render.Renderable) {
 	hit := collision.HitLabel(k.s1, collision.Label(coralExit))
 	if hit != nil {
 		hit.CID.Trigger("OpenExit", nil)
-		r.UnDraw()
+		r.Undraw()
 	}
 }
 
 func keyDestroy(id int, nothing interface{}) int {
 	k := event.GetEntity(id).(*key)
-	k.r.UnDraw()
+	k.r.Undraw()
 	collision.Remove(k.s1, k.s2)
 	event.DestroyEntity(id)
 	return 0

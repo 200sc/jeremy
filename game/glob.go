@@ -43,7 +43,7 @@ func globInit(x, y int, r render.Renderable) {
 
 func globDestroy(id int, nothing interface{}) int {
 	g := event.GetEntity(id).(*glob)
-	g.r.UnDraw()
+	g.r.Undraw()
 	collision.Remove(g.s1, g.s2)
 	event.DestroyEntity(id)
 	return 0
