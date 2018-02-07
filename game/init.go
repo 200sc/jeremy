@@ -62,7 +62,8 @@ func init() {
 // initTiles is not in the init() because sheets cannot be obtained from oak
 // prior to oak's startup
 func initTiles() {
-	jsh := render.GetSheet(filepath.Join("16", "jeremy.png"))
+	jshtt, _ := render.GetSheet(filepath.Join("16", "jeremy.png"))
+	jsh := jshtt.ToSprites()
 	tileRs[sand] = jsh[0][6].Copy()
 	tileRs[coral] = jsh[1][6].Copy()
 	tileRs[sandglob] = jsh[2][6].Copy()

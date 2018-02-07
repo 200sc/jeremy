@@ -20,7 +20,7 @@ var (
 )
 
 type jeremy struct {
-	entities.Interactive
+	*entities.Interactive
 	physics.Mass
 	eyes                     *render.Switch
 	stopMovingX, stopMovingY bool
@@ -30,8 +30,7 @@ type jeremy struct {
 }
 
 func (j *jeremy) Init() event.CID {
-	j.CID = event.NextID(j)
-	return j.CID
+	return event.NextID(j)
 }
 
 func newJeremy(x, y int, r render.Renderable) {
@@ -39,7 +38,8 @@ func newJeremy(x, y int, r render.Renderable) {
 
 	// Renderable setup
 	// Jeremy's main sprite
-	jsh := render.GetSheet(filepath.Join("16", "jeremy.png"))
+	jshtt, _ := render.GetSheet(filepath.Join("16", "jeremy.png"))
+	jsh := jshtt.ToSprites()
 	cmp := render.NewSwitch("still_down", map[string]render.Modifiable{
 		"still_down":        jsh[0][0].Copy(),
 		"still_up":          jsh[0][2].Copy(),
@@ -68,7 +68,7 @@ func newJeremy(x, y int, r render.Renderable) {
 		log.Fatal(err)
 	}
 	//
-	downeyes := render.NewComposite(eyes.Copy(), eyes.Copy().Modify(mod.FlipX))
+	downeyes := render.NewCompositeM(eyes.Copy(), eyes.Copy().Modify(mod.FlipX))
 	downeyes.Get(0).ShiftX(4)
 	downeyes.Get(0).ShiftY(8)
 	downeyes.Get(1).ShiftX(9)
@@ -93,7 +93,7 @@ func newJeremy(x, y int, r render.Renderable) {
 	//eyecmp.ShiftX(-14)
 	//eyecmp.ShiftY(-24)
 	// Draw both of those at the same time
-	composite := render.NewComposite(cmp, eyecmp)
+	composite := render.NewCompositeM(cmp, eyecmp)
 
 	// Non-renderable variables
 	j.Interactive = entities.NewInteractive(0, 0, 14, 14, composite, nil, j.Init(), 0.4)
@@ -259,7 +259,7 @@ func enterJeremy(id int, frame interface{}) int {
 }
 
 func (j *jeremy) UpdateAnimation() {
-	cmp := j.R.(*render.Composite)
+	cmp := j.R.(*render.CompositeM)
 	if j.Delta.Magnitude() > 0.4 {
 		var s string
 		if math.Abs(j.Delta.X()) > math.Abs(j.Delta.Y()) {

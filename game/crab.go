@@ -13,7 +13,7 @@ import (
 type crab struct {
 	// Could make crabs interactive, so they have speed, delta, etc, and could
 	// be pushed with mass just like jeremy.
-	entities.Solid
+	*entities.Solid
 }
 
 // Crabs are either vertical or horizontal.
@@ -22,7 +22,8 @@ type crab struct {
 func newVerticalCrab(x, y int, r render.Renderable) {
 	c := new(crab)
 	xf, yf := float64(x*16), float64(y*16)
-	jsh := render.GetSheet(filepath.Join("16", "jeremy.png"))
+	jshtt, _ := render.GetSheet(filepath.Join("16", "jeremy.png"))
+	jsh := jshtt.ToSprites()
 	r = render.NewSwitch("still", map[string]render.Modifiable{
 		"still":  jsh[2][3].Copy(),
 		"moving": render.NewSequence(12, jsh[2][3].Copy(), jsh[2][4].Copy()),
@@ -36,7 +37,8 @@ func newVerticalCrab(x, y int, r render.Renderable) {
 func newHorizontalCrab(x, y int, r render.Renderable) {
 	c := new(crab)
 	xf, yf := float64(x*16), float64(y*16)
-	jsh := render.GetSheet(filepath.Join("16", "jeremy.png"))
+	jshtt, _ := render.GetSheet(filepath.Join("16", "jeremy.png"))
+	jsh := jshtt.ToSprites()
 	r = render.NewSwitch("still", map[string]render.Modifiable{
 		"still":  jsh[3][3].Copy(),
 		"moving": render.NewSequence(12, jsh[3][3].Copy(), jsh[3][4].Copy()),
